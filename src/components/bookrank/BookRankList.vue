@@ -1,0 +1,53 @@
+<template>
+	<div class="rank-list-container">
+		<m-head :backbtn="true" :title="title">
+    </m-head>
+		<listItem :Lists="ranklist">
+    </listItem>
+	</div>
+</template>
+
+<script>
+  import HeaderView from '../header/HeaderView'
+  import listItem from '../listitem/ListItemView'
+  import {getRank} from '../../api/api'
+  import {Indicator} from 'mint-ui'
+  import util from '../../api/util'
+
+	export default{
+		components:{
+			'm-head':HeaderView,
+			listItem
+		},
+		data(){
+			return{
+				ranklist:{},
+				title:''
+			}
+		},
+		mounted(){
+      this.getRanklists()
+		},
+    methods:{
+		  getRanklists(){
+        Indicator.open()
+        getRank(this.$route.params.rankid).then(res=>{
+          res.data.ranking.books.forEach(list=>{
+            list.cover=util.staticPath+list.cover;
+          })
+          this.ranklist= res.data.ranking.books;
+          this.title=this.$store.state.RankList.title;
+          Indicator.close()
+        })
+      }
+    }
+	}
+</script>
+
+<style type="text/css">
+	.rank-list-container{
+		height: 92vh;
+		overflow: hidden;
+    padding-bottom: 25px;
+	}
+</style>
